@@ -1,8 +1,9 @@
-.PHONY: help setup up down restart logs php migrate fresh artisan composer
+.PHONY: help setup build up down restart logs php migrate fresh artisan composer
 
 help:
 	@echo ""
 	@echo "  make setup      First-time project setup"
+	@echo "  make build      Build all services"
 	@echo "  make up         Start all services"
 	@echo "  make down       Stop all services"
 	@echo "  make restart    Restart all services"
@@ -16,6 +17,9 @@ help:
 
 setup:
 	@chmod +x setup.sh && ./setup.sh
+
+build:
+	docke compose build
 
 up:
 	docke compose up -d
