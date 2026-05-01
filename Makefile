@@ -19,10 +19,10 @@ setup:
 	@chmod +x setup.sh && ./setup.sh
 
 build:
-	docke compose build
+	docker compose build
 
 up:
-	docke compose up -d
+	docker compose up -d
 
 down:
 	docker compose down

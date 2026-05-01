@@ -1,6 +1,9 @@
 FROM php:8.4-fpm-bookworm
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
     git \
     curl \
     libpng-dev \
@@ -11,9 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libonig-dev \
     libpq-dev \
     libicu-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN docker-php-ext-install \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install \
     pdo \
     pdo_pgsql \
     pgsql \
@@ -23,10 +25,14 @@ RUN docker-php-ext-install \
     zip \
     mbstring \
     pcntl \
-    intl
+    intl \
+    && groupadd -g ${GROUP_ID} app \
+    && useradd -u ${USER_ID} -g ${GROUP_ID} -m app
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
 COPY php.ini /usr/local/etc/php/conf.d/custom.ini
+
+USER app
