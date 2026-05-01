@@ -29,8 +29,14 @@ docker compose build
 # Start postgres first
 docker compose up -d postgres
 echo "Waiting for PostgreSQL to be ready..."
-until docker compose exec postgres pg_isready -U forest > /dev/null 2>&1; do
-    sleep 1
+RETRIES=30
+until docker compose exec -T postgres pg_isready -U forest > /dev/null 2>&1; do
+    RETRIES=$((RETRIES - 1))
+    if [ $RETRIES -le 0 ]; then
+        echo "PostgreSQL failed to start. Check logs: docker compose logs postgres"
+        exit 1
+    fi
+    sleep 2
 done
 echo -e "${GREEN}PostgreSQL ready.${NC}"
 
@@ -62,6 +68,10 @@ configure_env() {
 
 configure_env
 echo -e "${GREEN}back/.env configured.${NC}"
+
+# Install composer dependencies
+echo "Installing composer dependencies..."
+docker compose run --rm --no-deps php composer install
 
 # Generate app key if not set
 docker compose run --rm --no-deps php php artisan key:generate --no-interaction
