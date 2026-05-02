@@ -29,7 +29,7 @@ RUN apt-get update \
     && groupadd -g ${GROUP_ID} app \
     && useradd -u ${USER_ID} -g ${GROUP_ID} -m app
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.9.7 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
