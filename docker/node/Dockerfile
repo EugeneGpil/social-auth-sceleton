@@ -1,4 +1,4 @@
-FROM node:25.9.0-bookworm
+FROM node:24.15.0-bookworm
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000

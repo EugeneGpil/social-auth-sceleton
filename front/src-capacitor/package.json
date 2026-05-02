@@ -1,0 +1,13 @@
+{
+  "name": "forest",
+  "version": "0.0.1",
+  "description": "forest",
+  "author": "gpilligrim@gmail.com",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  }
+}
