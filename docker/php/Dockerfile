@@ -27,7 +27,11 @@ RUN apt-get update \
     pcntl \
     intl \
     && groupadd -g ${GROUP_ID} app \
-    && useradd -u ${USER_ID} -g ${GROUP_ID} -m app
+    && useradd -u ${USER_ID} -g ${GROUP_ID} -m app \
+    && echo 'HISTFILE=/home/app/.bash_history' >> /home/app/.bashrc \
+    && echo 'HISTSIZE=1000' >> /home/app/.bashrc \
+    && echo 'HISTFILESIZE=2000' >> /home/app/.bashrc \
+    && echo 'PROMPT_COMMAND="history -a"' >> /home/app/.bashrc
 
 COPY --from=composer:2.9.7 /usr/bin/composer /usr/bin/composer
 
