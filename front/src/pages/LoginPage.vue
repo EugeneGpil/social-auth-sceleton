@@ -31,19 +31,17 @@
 
 <script setup>
 import { auth } from 'src/boot/firebase'
-import {
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-} from 'firebase/auth'
+import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from 'src/stores/auth'
+import { watch } from 'vue'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
-onAuthStateChanged(auth, (user) => {
-  if (user) router.push('/')
-})
+watch(() => authStore.isLoggedIn, (loggedIn) => {
+  if (loggedIn) router.push('/')
+}, { immediate: true })
 
 async function loginWithGoogle() {
   const provider = new GoogleAuthProvider()
