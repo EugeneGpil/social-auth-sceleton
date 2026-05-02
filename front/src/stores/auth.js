@@ -1,6 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { auth } from 'src/boot/firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { api, TOKEN_KEY } from 'src/api'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -15,15 +16,31 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     init() {
       return new Promise((resolve) => {
-        onAuthStateChanged(auth, (user) => {
-          this.user = user
+        onAuthStateChanged(auth, async (firebaseUser) => {
+          if (firebaseUser) {
+            if (!localStorage.getItem(TOKEN_KEY)) {
+              await this._syncWithBackend(firebaseUser)
+            }
+            this.user = firebaseUser
+          } else {
+            this.user = null
+            localStorage.removeItem(TOKEN_KEY)
+          }
           this.ready = true
-          resolve(user)
+          resolve(this.user)
         })
       })
     },
 
+    async _syncWithBackend(firebaseUser) {
+      const idToken = await firebaseUser.getIdToken()
+      const { token } = await api.post('auth/firebase', { id_token: idToken })
+      localStorage.setItem(TOKEN_KEY, token)
+    },
+
     async logout() {
+      await api.post('auth/logout').catch(() => {})
+      localStorage.removeItem(TOKEN_KEY)
       await signOut(auth)
       this.user = null
     },
