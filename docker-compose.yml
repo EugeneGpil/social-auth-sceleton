@@ -47,6 +47,8 @@ services:
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
+    ports:
+      - "${QUASAR_PORT:-9000}:9000"
     volumes:
       - ./front:/var/www/html
       - node_home:/home/app
