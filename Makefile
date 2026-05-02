@@ -1,4 +1,4 @@
-.PHONY: help setup build up down restart logs php migrate fresh artisan composer
+.PHONY: help setup build up down restart logs php node migrate fresh artisan composer
 
 help:
 	@echo ""
@@ -9,6 +9,7 @@ help:
 	@echo "  make restart    Restart all services"
 	@echo "  make logs       Tail all logs"
 	@echo "  make php        Shell into PHP container"
+	@echo "  make node       Shell into Node container"
 	@echo "  make migrate    Run migrations"
 	@echo "  make fresh      Fresh migrate + seed"
 	@echo "  make artisan    Run artisan (make artisan CMD='route:list')"
@@ -35,6 +36,9 @@ logs:
 
 php:
 	docker compose exec php bash
+
+node:
+	docker compose exec node bash
 
 migrate:
 	docker compose exec php php artisan migrate
