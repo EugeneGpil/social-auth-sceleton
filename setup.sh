@@ -45,6 +45,12 @@ if [ ! -f back/.env ]; then
     cp back/.env.example back/.env
 fi
 
+# Configure front/.env
+if [ ! -f front/.env.local ]; then
+    cp front/.env.example front/.env.local
+    echo -e "${GREEN}Created front/.env.local from front/.env.example — fill in your Firebase credentials.${NC}"
+fi
+
 configure_env() {
     local file="back/.env"
     sed -i "s|^APP_URL=.*|APP_URL=http://localhost:8000|" "$file"
@@ -85,4 +91,8 @@ echo ""
 echo -e "${GREEN}=============================="
 echo "  Setup complete!"
 echo "==============================${NC}"
+echo ""
+echo "Next steps:"
+echo "  1. Add Firebase credentials JSON to back/storage/app/firebase-credentials.json"
+echo "  2. Fill in Firebase config in front/.env.local"
 echo ""
