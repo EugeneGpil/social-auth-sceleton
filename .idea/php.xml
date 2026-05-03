@@ -153,6 +153,7 @@
       <path value="$PROJECT_DIR$/back/vendor/google/cloud-core" />
       <path value="$PROJECT_DIR$/back/vendor/google/protobuf" />
       <path value="$PROJECT_DIR$/back/vendor/laravel/sanctum" />
+      <path value="$PROJECT_DIR$/back/vendor/_laravel_idea" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3">

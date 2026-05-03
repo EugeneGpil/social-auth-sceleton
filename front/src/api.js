@@ -13,7 +13,11 @@ async function request(method, path, body) {
     },
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) {
+    const err = new Error(`HTTP ${res.status}`)
+    err.status = res.status
+    throw err
+  }
   return res.json()
 }
 
