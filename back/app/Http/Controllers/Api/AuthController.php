@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +21,7 @@ class AuthController extends Controller
         try {
             $verified = $this->auth->verifyIdToken($request->id_token);
         } catch (FailedToVerifyToken) {
-            return response()->json(['message' => 'Invalid token'], 401);
+            return ApiResponse::error('Invalid token', 401);
         }
 
         $claims = $verified->claims();
@@ -36,18 +37,18 @@ class AuthController extends Controller
 
         $token = $user->createToken('mobile')->plainTextToken;
 
-        return response()->json(['token' => $token, 'user' => $user]);
+        return ApiResponse::success(['token' => $token, 'user' => $user]);
     }
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        return ApiResponse::success($request->user());
     }
 
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out']);
+        return ApiResponse::success(message: 'Logged out');
     }
 }
