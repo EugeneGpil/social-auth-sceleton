@@ -82,6 +82,10 @@ docker compose run --rm --no-deps php composer install
 # Generate app key if not set
 docker compose run --rm --no-deps php php artisan key:generate --no-interaction
 
+# Install node dependencies
+echo "Installing node dependencies..."
+docker compose run --rm --no-deps node npm install
+
 # Start all services and run migrations
 docker compose up -d
 echo "Running migrations..."
