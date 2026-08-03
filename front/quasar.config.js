@@ -155,6 +155,18 @@ export default defineConfig((ctx) => {
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
+
+      extendGenerateSWOptions(cfg) {
+        // In production the API shares the origin with the front (host nginx
+        // routes /api, /storage and /sanctum to Laravel), so the SPA navigation
+        // fallback must not answer for those paths.
+        cfg.navigateFallbackDenylist = [
+          ...(cfg.navigateFallbackDenylist || []),
+          /^\/api\//,
+          /^\/storage\//,
+          /^\/sanctum\//,
+        ]
+      },
       // swFilename: 'sw.js',
       // manifestFilename: 'manifest.json',
       // extendManifestJson (json) {},
