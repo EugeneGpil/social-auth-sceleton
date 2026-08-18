@@ -17,28 +17,39 @@
   </div>
 </template>
 
-<script setup>
-import { watch } from 'vue'
-import { useRouter } from 'vue-router'
+<script>
+import { mapActions, mapState } from 'pinia'
 import { useAuthStore } from 'src/stores/auth'
 
-const router = useRouter()
-const authStore = useAuthStore()
+export default {
+  name: 'LoginPage',
 
-watch(
-  () => authStore.isLoggedIn,
-  (loggedIn) => {
-    if (loggedIn) router.push('/')
+  computed: {
+    // `mapState` covers getters as well as state, so this is the store's `isLoggedIn` getter.
+    ...mapState(useAuthStore, ['isLoggedIn']),
   },
-  { immediate: true },
-)
 
-// Google only, and the sign-in itself lives in the store: the browser and the Android app
-// reach Firebase by different routes (see `loginWithGoogle`), and a page should not have to
-// know which one it is running in.
-//
-// Facebook was dropped rather than hidden on native. Facebook refuses embedded-WebView OAuth
-// for the same reason Google does, so a second provider here would be a button that works in
-// the browser and silently fails in the app — see `docs/android_capacitor.md` §3.
-const loginWithGoogle = () => authStore.loginWithGoogle()
+  watch: {
+    // `immediate` because the usual case is arriving here already signed in — the Firebase
+    // session is restored during boot, so by the time this page renders the answer is often
+    // already yes and no change event would ever come.
+    isLoggedIn: {
+      immediate: true,
+      handler(loggedIn) {
+        if (loggedIn) this.$router.push('/')
+      },
+    },
+  },
+
+  methods: {
+    // Mapped straight off the store rather than wrapped: the browser and the Android app reach
+    // Firebase by different routes (see the store's `loginWithGoogle`), and a page should not
+    // have to know which one it is running in.
+    //
+    // Facebook was dropped rather than hidden on native. Facebook refuses embedded-WebView
+    // OAuth for the same reason Google does, so a second provider here would be a button that
+    // works in the browser and silently fails in the app — see `docs/android_capacitor.md` §3.
+    ...mapActions(useAuthStore, ['loginWithGoogle']),
+  },
+}
 </script>
