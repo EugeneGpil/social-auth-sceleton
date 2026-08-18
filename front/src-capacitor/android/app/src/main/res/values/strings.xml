@@ -1,7 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">forest</string>
-    <string name="title_activity_main">forest</string>
-    <string name="package_name">com.forest.app</string>
-    <string name="custom_url_scheme">com.forest.app</string>
+    <!-- The launcher label. Kept short — Android truncates it under the icon. -->
+    <string name="app_name">App</string>
+    <string name="title_activity_main">App</string>
+    <!-- Must match `applicationId` in app/build.gradle. -->
+    <string name="package_name">com.example.app</string>
+    <!-- Capacitor's deep-link scheme. Nothing uses it yet; it must simply not be another
+         app's package name. -->
+    <string name="custom_url_scheme">com.example.app</string>
 </resources>

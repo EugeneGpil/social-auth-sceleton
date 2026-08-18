@@ -1,5 +1,14 @@
 {
-  "appId": "com.forest.app",
-  "appName": "forest",
-  "webDir": "www"
+  "appId": "com.example.app",
+  "appName": "App",
+  "webDir": "www",
+  "server": {
+    "url": "https://app.example.com"
+  },
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": ["google.com"]
+    }
+  }
 }

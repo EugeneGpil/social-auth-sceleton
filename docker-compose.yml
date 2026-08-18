@@ -61,9 +61,40 @@ services:
       - ${SHARED_PATH:-.}/docker/volumes/node_home:/home/app
     restart: unless-stopped
 
+  # The Android build toolchain (docs/android_capacitor.md). Behind a profile because it is a
+  # one-shot `run --rm` tool, not part of `make up` — nothing in the dev loop needs it, and
+  # pulling a JDK + Android SDK image for everyone who starts the stack would be rude.
+  capacitor:
+    profiles: ["capacitor"]
+    image: ${COMPOSE_PROJECT_NAME:-app}-capacitor
+    build:
+      context: ./docker/capacitor
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    volumes:
+      - ./front/src-capacitor:/work
+      # Holds the Android debug keystore, which Gradle generates on the first debug build and
+      # signs every one after. Persisted rather than disposable because the signing certificate
+      # is an input to things registered elsewhere: its SHA-1 goes in the Firebase console for
+      # native Google sign-in, and its SHA-256 in /.well-known/assetlinks.json for WebAuthn.
+      # A fresh keystore each build would silently invalidate both.
+      - ${SHARED_PATH:-.}/docker/volumes/android_home:/home/app/.android
+      - capacitor_gradle:/home/app/.gradle
+      # npm's cache, so `capacitor-install` does not re-download the plugin packages on every
+      # `--rm` invocation. Disposable, hence a volume rather than a bind mount.
+      - capacitor_npm:/home/app/.npm
+
   mailpit:
     image: axllent/mailpit:v1.29.7
     ports:
       - "${MAILPIT_SMTP_PORT:-1025}:1025"
       - "${MAILPIT_UI_PORT:-8025}:8025"
     restart: unless-stopped
+
+volumes:
+  # Gradle's dependency cache and npm's, both disposable: losing them costs one slow build,
+  # not a rebuild of anything that matters. The Android *keystore* is the thing that must
+  # survive, and it lives in the bind-mounted docker/volumes/android_home instead.
+  capacitor_gradle:
+  capacitor_npm:

@@ -1,10 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.forest.app"
+    namespace = "com.example.app"
     compileSdk = rootProject.ext.compileSdkVersion
+
+    // Pinned so the container can pin the same version. Left unset, AGP falls back to its own
+    // default and installs it mid-build over the network — see docker/capacitor/Dockerfile.
+    buildToolsVersion = "36.0.0"
+
     defaultConfig {
-        applicationId "com.forest.app"
+        // PLACEHOLDER — change this before the first Play upload, after which it is permanent
+        // for the life of the listing. `com.example.*` is rejected by Play outright, which is
+        // the point: it cannot be shipped by accident. It must also match `appId` in
+        // capacitor.config.json, the package in `google-services.json`, and — if WebAuthn is
+        // ever used — the package named by /.well-known/assetlinks.json.
+        applicationId "com.example.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -21,6 +31,20 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        // **No `applicationIdSuffix` here, deliberately.** A suffixed debug package would install
+        // beside a release build rather than replacing it, which is nicer for comparing the two —
+        // but every id has to exist in `google-services.json`, and the
+        // `com.google.gms.google-services` plugin fails the build outright ("No matching client
+        // found for package name") for one that does not. One package means one Android app to
+        // register in the Firebase console, with one set of fingerprints.
+        //
+        // The consequence on a test phone: a debug build and a Play-signed build cannot coexist.
+        // The debug key is not Play's, so installing over it is refused — `adb uninstall <appId>`
+        // first.
+        debug {
+            versionNameSuffix "-dev"
+        }
     }
 }
 
@@ -35,6 +59,11 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    // Declared here even though capacitor-android already depends on it: that is an
+    // `implementation` dependency of a library module, so its classes are not on this module's
+    // compile classpath and MainActivity cannot see WebSettingsCompat without this line. The
+    // version is the one Capacitor itself pins, in variables.gradle — do not fork it.
+    implementation "androidx.webkit:webkit:$androidxWebkitVersion"
     implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
